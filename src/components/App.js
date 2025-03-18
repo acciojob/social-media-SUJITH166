@@ -1,46 +1,50 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-
+import React from 'react'
 import {
-  fetchNotifications,
-  selectAllNotifications
-} from "../features/notifications/notificationsSlice";
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom'
 
-export const Navbar = () => {
-  const dispatch = useDispatch();
-  const notifications = useSelector(selectAllNotifications);
-  const numUnreadNotifications = notifications.filter((n) => !n.read).length;
+import { Navbar } from './app/Navbar'
 
-  const fetchNewNotifications = () => {
-    dispatch(fetchNotifications());
-  };
+import { PostsList } from './features/posts/PostsList'
+import { AddPostForm } from './features/posts/AddPostForm'
+import { EditPostForm } from './features/posts/EditPostForm'
+import { SinglePostPage } from './features/posts/SinglePostPage'
+import { UsersList } from './features/users/UsersList'
+import { UserPage } from './features/users/UserPage'
+import { NotificationsList } from './features/notifications/NotificationsList'
 
-  let unreadNotificationsBadge;
-
-  if (numUnreadNotifications > 0) {
-    unreadNotificationsBadge = (
-      <span className="badge">{numUnreadNotifications}</span>
-    );
-  }
-
+function App() {
   return (
-    <nav>
-      <section>
-        <h1>GenZ</h1>
+    <Router>
+      <Navbar />
+      <div className="App">
+        <Switch>
+          <Route
+            exact
+            path="/"
+            render={() => (
+              <React.Fragment>
+                <AddPostForm />
+                <PostsList />
+              </React.Fragment>
+            )}
+          />
+          <Route exact path="/posts/:postId" component={SinglePostPage} />
+          <Route exact path="/editPost/:postId" component={EditPostForm} />
+          <Route exact path="/users" component={UsersList} />
+          <Route exact path="/users/:userId" component={UserPage} />
+          <Route exact path="/notifications" component={NotificationsList} />
+          <Redirect to="/" />
+        </Switch>
+      </div>
+    </Router>
+  )
+}
 
-        <div className="navContent">
-          <div className="navLinks">
-            <Link to="/">Posts</Link>
-            <Link to="/users">Users</Link>
-            <Link to="/notifications">
-              Notifications {unreadNotificationsBadge}
-            </Link>
-          </div>
-
-          <button className="button" onClick={fetchNewNotifications}>
-            Refresh Notifications
-          </button>
+export default App
         </div>
       </section>
     </nav>
